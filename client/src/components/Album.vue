@@ -44,6 +44,7 @@ export default {
     methods: {
         clicked() {
             this.$emit("clicked");
+            this.$emit("drawClipOutlines");
         },
         clickedArtist() {
             this.$emit("clickedArtist");

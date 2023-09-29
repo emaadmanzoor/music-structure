@@ -6,6 +6,31 @@ import * as log from "../dev/log";
 
 Vue.use(Vuex);
 
+const clipStore = {
+    namespaced: true,
+    state: {
+        clips: []
+        // Clip will contain:
+        // id, start, end
+    },
+    mutations: { 
+        addToClips(state, clip) {
+            state.clips.push(clip);
+        },
+        addToClipsIndex(state, index, clip) {
+            state.clips.splice(index, 0, clip);
+        },
+        clearClips(state) {
+            state.clips = [];
+        },
+    },
+    getters: { 
+        allClips(state) {
+            return state.clips;
+        },
+    }
+}
+
 export default new Vuex.Store({
     state: {
         browser: "",
@@ -22,8 +47,24 @@ export default new Vuex.Store({
         zoomScale: 10,
         playerActive: true,
         inputFocus: false,
+        startTime1: 0,
+        endTime1: 0,
+        startTime2: 0,
+        endTime2: 0
     },
     mutations: {
+        setStartTime1(state, time_ms) {
+            state.startTime1 = time_ms;
+        },
+        setEndTime1(state, time_ms) {
+            state.endTime1 = time_ms;
+        },
+        setStartTime2(state, time_ms) {
+            state.startTime2 = time_ms;
+        },
+        setEndTime2(state, time_ms) {
+            state.endTime2 = time_ms;
+        },
         setSeeker(state, time_ms) {
             state.seeker = time_ms;
         },
@@ -78,6 +119,18 @@ export default new Vuex.Store({
         seeker(state) {
             return state.seeker;
         },
+        startTime1(state) {
+            return state.startTime1;
+        },
+        endTime1(state) {
+            return state.endTime1;
+        },
+        startTime2(state) {
+            return state.startTime2;
+        },
+        endTime2(state) {
+            return state.endTime2;
+        },
         selectedIndex(state) {
             return state.selectedIndex;
         },
@@ -118,5 +171,7 @@ export default new Vuex.Store({
             return state.inputFocus;
         },
     },
-    modules: {},
+    modules: {
+        clipStore: clipStore
+    },
 });
