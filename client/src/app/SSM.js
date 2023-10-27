@@ -176,7 +176,7 @@ function medianSmoothing(ssm, length, tempoRatio, resolution = 128) {
         }
         return mean;
     });
-
+    
     return smoothedSSM;
 }
 

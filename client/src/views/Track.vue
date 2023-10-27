@@ -5,18 +5,9 @@
             <v-spacer></v-spacer>
 
             <form v-if="!testing && !synthesizing" v-on:submit.prevent="search">
-                <v-text-field
-                    v-model="searchQuery"
-                    label="Search for songs"
-                    hide-details
-                    append-icon="mdi-magnify"
-                    single-line
-                    rounded
-                    dense
-                    filled
-                    @focus="$store.commit('setInputFocus', true)"
-                    @blur="$store.commit('setInputFocus', false)"
-                ></v-text-field>
+                <v-text-field v-model="searchQuery" label="Search for songs" hide-details append-icon="mdi-magnify"
+                    single-line rounded dense filled @focus="$store.commit('setInputFocus', true)"
+                    @blur="$store.commit('setInputFocus', false)"></v-text-field>
             </form>
             <!--<form v-if="testing && !synthesizing">
                 <v-select
@@ -54,14 +45,8 @@
             -->
             <div class="volumeSlider">
                 <v-container>
-                    <v-slider
-                        @click:prepend="clickVolume"
-                        :prepend-icon="getVolumeIcon()"
-                        v-model="volume"
-                        :min="0"
-                        :max="1"
-                        :step="0.02"
-                    ></v-slider>
+                    <v-slider @click:prepend="clickVolume" :prepend-icon="getVolumeIcon()" v-model="volume" :min="0"
+                        :max="1" :step="0.02"></v-slider>
                 </v-container>
             </div>
             <v-btn icon @click="share()">
@@ -74,6 +59,19 @@
         <TrackSelector v-if="!synthesizing" :tracks="trackList" :album-size="120" />
         <div ref="mainContent" class="mainContent" :style="mainContentStyle">
             <!--<v-btn v-for="(n, i) in 10" :key="'colordiv' + i" width="20" height="20" :color="color(i)"></v-btn>-->
+            <!-- <form v-if="!testing && !synthesizing">
+                <v-text-field v-model="startTime" label="" hide-details single-line rounded dense filled></v-text-field>
+                <v-text-field v-model="endTime" label="" hide-details single-line rounded dense filled></v-text-field>
+            </form>
+            <v-btn icon @click="revisualize">
+                <v-icon>mdi-pencil</v-icon>
+            </v-btn> -->
+            <div>
+                <label class="text-reader">
+                    <input type="file" @change="loadTextFromFile">
+                </label>
+            </div>
+
             <Player v-if="!synthesizing" :width="mainContentWidth" />
             <Visualization :width="mainContentWidth" :showPrototype="showPrototype" />
             <v-btn class="readMore" @click="readMore()" style="color: #aaa">
@@ -99,6 +97,7 @@ export default {
     name: "Track",
     data() {
         return {
+            fileContent: null,
             searchQuery: "",
             synthesizerString: "",
             volume: 0.75,
@@ -180,7 +179,7 @@ export default {
         });
     },
     mounted() {
-        this._keyListener = function(e) {
+        this._keyListener = function (e) {
             if (e.key === "z" && (e.ctrlKey || e.metaKey)) {
                 e.preventDefault(); // present "Save Page" from getting triggered.
 
@@ -202,6 +201,37 @@ export default {
         },
         search() {
             app.search(this.searchQuery);
+        },
+        revisualize() {
+            this.$store.commit("setSeeker", this.startTime * 1000);
+        },
+        async loadTextFromFile(ev) {
+
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+
+            reader.onload = (event) => {
+                const text = event.target.result;
+
+                // Split the file content into an array of lines
+                const lines = text.split('\n');
+
+                // Set the fileContent data property to the array of lines
+                this.fileContent = lines;
+
+                for (let i = 0; i < lines.length; i++) {
+                    const songInfo = lines[i].split(', ');
+                    const songId = songInfo[0];
+                    const startTime = songInfo[1];
+                    const endTime = songInfo[2];
+                    this.$store.commit("clipStore/addToClips", {songId: songId, startTime: startTime, endTime: endTime});
+                }
+            };
+
+            reader.readAsText(file);
+
         },
         loadTestSet() {
             app.loadTestSet(this.selectedTestSet);
@@ -244,22 +274,28 @@ export default {
 
 <style>
 .track {
-    overflow: hidden; /* Hide scrollbars */
+    overflow: hidden;
+    /* Hide scrollbars */
 }
+
 .mainContent {
     display: inline-block;
     overflow: hidden;
 }
+
 .volumeSlider {
     height: 100%;
     width: 150px;
 }
+
 .trackScroll {
     /*overflow-x: auto;*/
 }
+
 .trackScroll::-webkit-scrollbar {
     display: none;
 }
+
 .readMore {
     position: fixed;
     z-index: 1000;

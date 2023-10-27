@@ -47,6 +47,7 @@ export default class HalfMatrix {
     }
 
     static fromMatrix(matrix) {
+        log.info('fromMatrix function: ');
         const halfMatrix = new HalfMatrix({
             size: matrix.width,
             numberType: matrix.numberType,

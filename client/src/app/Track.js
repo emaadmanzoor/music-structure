@@ -241,6 +241,24 @@ export default class Track {
             })
             .then((result) => {
                 this.harmonicStructureCourse = result.harmonicStructure;
+                // const secondToColor = new Map();
+                // for (const section of this.harmonicStructureCourse) {
+                //     for (let i = section.start; i <= section.end; i++) {
+                //         console.log(i)
+                        
+                //         // Create map from second to color.
+                //         secondToColor.set(int(i), vis.sinebowColorNormalizedRadiusToHex(section.colorAngle, section.colorRadius, section.confidence));
+                //     }
+                //     console.log('tbahar: ', vis.sinebowColorNormalizedRadius(section.colorAngle, section.colorRadius, section.confidence));
+                // }
+                // Sort list so seconds are increasing.
+                // secondToColor = new Map([...secondToColor.entries()].sort((a, b) => a[0] - b[0]));
+
+                // const headers = ["Song ID", "Billboard Chart", "Repetition"]
+                // // Add the values of the map to be exported.
+                // for (let [key, value] of secondToColor) {
+                    
+                // }
             });
         window.eventBus.$on("harmonicStructure", this.harmonicStructureListener);
         this.eventListenerSet = true;

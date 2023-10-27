@@ -93,6 +93,24 @@ export function lightness(color, lightness) {
     return hslColor.hex();
 }
 
+function componentToHex(c) {
+    var hex = c.toString(16);
+    return hex.length == 1 ? "0" + hex : hex;
+}
+
+function rgbToHex(r, g, b) {
+    return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+}
+
+export function sinebowColorNormalizedRadiusToHex(angle, radius, confidence = 1) {
+    const color = sinebowColorNormalized(angle);
+    const colorHSL = d3.hsl(color);
+    colorHSL.s = radius; //Math.pow(radius, 0.2);
+    colorHSL.l = (colorHSL.l - 0.5) * radius + 0.5;
+    const c = d3.rgb(colorHSL);
+    return rgbToHex(c.r, c.g, c.b);
+}
+
 export function sinebowColorNormalizedRadius(angle, radius, confidence = 1) {
     const color = sinebowColorNormalized(angle);
     const colorHSL = d3.hsl(color);
