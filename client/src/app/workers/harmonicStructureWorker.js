@@ -15,16 +15,19 @@ addEventListener("message", (event) => {
     const smoothedpitchFeatures = filter.gaussianBlurFeatures(data.pitchFeatures, 1);
 
     const pitchSSM = SSM.calculateSSM(smoothedpitchFeatures, data.sampleDuration, data.allPitches, 0.35, "euclidean");
+
     const enhancedSSM = SSM.enhanceSSM(
         pitchSSM,
         { blurLength: data.enhanceBlurLength, tempoRatios: data.tempoRatios, strategy: "linmed" },
         data.allPitches
     );
     const transpositionInvariantPre = SSM.makeTranspositionInvariant(enhancedSSM);
+    
     let strictPathMatrixHalf = SSM.rowColumnAutoThreshold(transpositionInvariantPre, 0.15); // .22 //.15 (30/06)
     //strictPathMatrixHalf = SSM.multiply(strictPathMatrixHalf, 1.3);
     //strictPathMatrixHalf = SSM.threshold(strictPathMatrixHalf, 0.1);
     const strictPathMatrix = Matrix.fromHalfMatrix(strictPathMatrixHalf);
+    log.info(strictPathMatrix.data)
 
     const duration = 3; // samples
     const sampledSegments = structure.createFixedDurationStructureSegments(sampleAmount, data.sampleDuration, duration);
